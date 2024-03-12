@@ -1,0 +1,41 @@
+/* подключаем внешний шрифт */
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+.note {
+  /* цвет фона */
+  background-color: #ffffff;
+  /* граница */
+  border: 1px solid #ebebeb;
+  /* рисуем границу по периметру карточки */
+  box-sizing: border-box;
+  /* межстрочное расстояние */
+  line-height: 1.5;
+  /* радиус скругления */
+  border-radius: 8px;
+  /* рисуем тень */
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 4px;
+  /* скрываем всё, что не помещается в блок */
+  overflow: hidden;
+  /* включаем гибкую вёрстку */
+  display: flex;
+  /* организуем вёрстку по столбцам */
+  flex-direction: column;
+  /* выравниваем карточки по центру друг относительно друга */
+  justify-content: space-between;
+  /* анимация появления и исчезания */
+  transition: all 300ms ease-in-out 0s;
+
+  width: 31%;
+  height: 160px;
+  padding: 3%;
+  margin: 1%;
+  opacity: 1;
+  border-width: 1px;
+}
+
+/* меняем цвет рамки карточки при наведении */
+.note:hover {
+  border-color: var(--tagColor);
+}
+
+/* устанавливаем размеры и отступы карточек */

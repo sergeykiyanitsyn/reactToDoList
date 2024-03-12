@@ -1,0 +1,44 @@
+.wrapper {
+  /* включаем абсолютное позиционирование */
+  position: absolute;
+  /* отступы сверху и слева */
+  top: 0;
+  left: 0;
+  /* высота и ширина блока */
+  width: 100%;
+  height: 100%;
+  /* цвет */
+  color: #333333;
+  /* шрифт */
+  font-family: 'Inter', sans-serif;
+}
+
+.taskHeaders {
+  display: flex;
+  margin: 20px auto;
+  justify-content: center;
+  font-size: x-large;
+  font-family: 'Madimi One', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* внутренний блок */
+.flexDiv {
+  /* включаем гибкую вёрстку */
+  display: flex;
+  position: absolute;
+  /* отступ сверху */
+  margin-top: 60px;
+  /* высота блока */
+  width: 90vw;
+  /* двигаем содержимое блока, если оно не помещается рядом */
+  flex-wrap: wrap;
+  /* максимальная ширина блока */
+  max-width: 800px;
+  /* отступы слева и сверху */
+  left: 50%;
+  top: 0;
+  /* сдвигаем влево по горизонтали */
+  transform: translateX(-50%);
+}
