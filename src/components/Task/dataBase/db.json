@@ -1,0 +1,34 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Jump",
+      "description": "Jump up and down on one leg while patting your head and rubbing your stomach. It's fun."
+    },
+    {
+      "id": "2",
+      "title": "Mirror",
+      "description": "Figure out the true color of a mirror."
+    },
+    {
+      "id": "3",
+      "title": "TV Shows",
+      "description": "Make a TV show with useless props and have a friend film on their phone."
+    },
+    {
+      "id": "4",
+      "title": "St Petersburg",
+      "description": "Pull an all-nighter then watch the sunrise from a roof."
+    },
+    {
+      "id": "5",
+      "title": "Real Friend",
+      "description": "Pull an all-nighter then watch the sunrise from a roof."
+    },
+    {
+      "id": "6",
+      "title": "Comics",
+      "description": "Make a Comic Book and then try to sell it."
+    }
+  ]
+}

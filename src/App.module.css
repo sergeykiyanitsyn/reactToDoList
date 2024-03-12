@@ -1,15 +1,10 @@
 .wrapper {
-  /* включаем абсолютное позиционирование */
-  position: absolute;
-  /* отступы сверху и слева */
-  top: 0;
-  left: 0;
-  /* высота и ширина блока */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   height: 100%;
-  /* цвет */
   color: #333333;
-  /* шрифт */
   font-family: 'Inter', sans-serif;
 }
 
@@ -23,22 +18,17 @@
   font-style: normal;
 }
 
-/* внутренний блок */
-.flexDiv {
-  /* включаем гибкую вёрстку */
+.flexButtons {
   display: flex;
-  position: absolute;
-  /* отступ сверху */
-  margin-top: 60px;
-  /* высота блока */
-  width: 90vw;
-  /* двигаем содержимое блока, если оно не помещается рядом */
-  flex-wrap: wrap;
-  /* максимальная ширина блока */
+  height: 70px;
   max-width: 800px;
-  /* отступы слева и сверху */
-  left: 50%;
-  top: 0;
-  /* сдвигаем влево по горизонтали */
-  transform: translateX(-50%);
+  width: 90vw;
+  justify-content: space-around;
+}
+
+.flexDiv {
+  display: flex;
+  width: 90vw;
+  flex-wrap: wrap;
+  max-width: 800px;
 }
