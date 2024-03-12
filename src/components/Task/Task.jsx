@@ -1,13 +1,31 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './Task.module.css'
 
 export const Task = () => {
-  const [isClick, setIsClick] = useState(true)
+  const [tasks, setTasks] = useState([])
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/todos')
+      .then((loadedData) => loadedData.json())
+      .then((loadedProducts) => {
+        setTasks(loadedProducts)
+      })
+  }, [])
+
   return (
-    <div className={styles.note}>
-      <img src="pin" alt="pin" />
-      <span> Название задачи </span>
-      {isClick && <div> Описание задачи </div>}
-    </div>
+    <>
+      {tasks.map(({ id, title }) => {
+        return (
+          <div key={id} className={styles.note}>
+            <div> {title} </div>
+            <div> Описание задачи </div>
+          </div>
+        )
+      })}
+    </>
   )
 }
+
+//  <img src="pin" alt="pin" />
+//       <span> Название задачи </span>
+//       <div> Описание задачи </div>
