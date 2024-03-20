@@ -21,6 +21,8 @@ const App = () => {
   const [updatingTaskForm, setUpdatingTaskForm] = useState(false)
   const [updatingTaskId, setUpadtingTaskId] = useState(null)
 
+  const [isLoading, setIsLoading] = useState(true) //Загружаемся
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.taskHeaders}> Лист задач </div>
@@ -56,6 +58,8 @@ const App = () => {
           setIsUpdating={setIsUpdating}
           refreshTasks={refreshTasks}
           updatingTaskId={updatingTaskId}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
         ></Form>
       )}
       <Message updFlag={updFlag} delFlag={delFlag}></Message>
@@ -69,6 +73,8 @@ const App = () => {
         setIsDeliting={setIsDeliting}
         setUpdatingTaskForm={setUpdatingTaskForm}
         setUpadtingTaskId={setUpadtingTaskId}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
       ></Tasks>
     </div>
   )

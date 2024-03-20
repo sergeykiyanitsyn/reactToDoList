@@ -1,66 +1,66 @@
 import { useEffect, useState } from 'react'
 import styles from './Task.module.css'
 import PropTypes from 'prop-types'
-import { onValue, ref, value } from 'firebase/database'
+import { onValue, ref, remove } from 'firebase/database'
 import { db } from '../../firebase'
 
 const isEmpty = ''
 
 export const Tasks = ({
-  refreshTasksFlag,
   updFlag,
   delFlag,
   setUpdFlag,
   setDelFlag,
   setIsDeliting,
-  refreshTasks,
   setUpdatingTaskForm,
   setUpadtingTaskId,
+  isLoading,
+  setIsLoading,
 }) => {
-  const [tasks, setTasks] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [tasks, setTasks] = useState({})
+  const [sortTasks, setSortTasks] = useState({})
+  const [findTasks, setFindTasks] = useState({})
+  const [sortFindTasks, setSortFindTasks] = useState({})
+
   const [textFinder, setTextFinder] = useState('')
-  const [sortOn, setSortOn] = useState(false)
-  const [isSorting, setIsSorting] = useState(false)
+
+  const [findFlag, setFindFlag] = useState(false) // Нажат ли поиск
+  const [sortOn, setSortOn] = useState(false) // Кнопка вкл/выкл
 
   const onClickSort = () => {
-    setIsSorting(true)
     setSortOn(!sortOn)
   }
 
-  const getServerTasks = () => {
-    setIsLoading(true)
-
-    return fetch('http://localhost:3005/tasks')
-      .then((loadedData) => loadedData.json())
-      .then((loadedProducts) => {
-        setTasks(loadedProducts)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-  }
-
-  const findTasks = (event) => {
+  const findAllTasks = (event) => {
     event.preventDefault()
+    setFindFlag(true)
     let allFindTasks = []
-    getServerTasks().then(() => {
-      tasks.map(({ id, title, description }) => {
-        // решить вопрос с маленьким регистром
-        const index = description.search(textFinder)
-        if (index !== -1) {
-          const finderTasks = { id, title, description }
-          allFindTasks.push(finderTasks)
-        }
-      })
-      setTasks(allFindTasks)
+    let allSortFindTask = []
+    Object.entries(tasks).map(([id, { title, description }]) => {
+      // решить вопрос с маленьким регистром
+      const index = description.search(textFinder)
+      if (index !== -1) {
+        const finderTasks = { id, title, description }
+        allFindTasks.push(finderTasks)
+      }
     })
+    sortTasks.map(([id, { title, description }]) => {
+      // решить вопрос с маленьким регистром
+      const index = description.search(textFinder)
+      if (index !== -1) {
+        const finderTasks = { id, title, description }
+        allSortFindTask.push(finderTasks)
+      }
+    })
+
+    setFindTasks(allFindTasks)
+    setSortFindTasks(allSortFindTask)
   }
 
   const onChangeFinder = ({ target }) => {
     setTextFinder(target.value)
     if (target.value === isEmpty) {
-      refreshTasks()
+      setFindFlag(false)
     }
   }
 
@@ -70,15 +70,15 @@ export const Tasks = ({
       setUpdatingTaskForm(true)
       setUpdFlag(false)
     }
+    //удалить
     if (delFlag) {
-      fetch(`http://localhost:3005/tasks/${id}`, {
-        method: 'DELETE',
+      setIsLoading(false)
+      const tasksDelDbRef = ref(db, `tasks/${id}`)
+
+      remove(tasksDelDbRef).finally(() => {
+        setIsDeliting(false)
+        setDelFlag(false)
       })
-        .then(() => refreshTasks())
-        .finally(() => {
-          setIsDeliting(false)
-          setDelFlag(false)
-        })
     }
   }
 
@@ -86,58 +86,38 @@ export const Tasks = ({
     const tasksDbRef = ref(db, 'tasks')
 
     return onValue(tasksDbRef, (snapshot) => {
-      const loaderProducts = snapshot.val()
+      const loaderTasks = snapshot.val() || {}
 
-      setTasks(loaderProducts)
+      const newFutureSortTasks = Object.entries(loaderTasks).sort(([, a], [, b]) => {
+        if (a.title < b.title) {
+          return -1
+        }
+        if (a.title > b.title) {
+          return 1
+        }
+        return 0
+      })
+
+      setTasks(loaderTasks)
+      setSortTasks(newFutureSortTasks)
       setIsLoading(false)
     })
-
-    // if (sortOn === true) {
-    //   setIsLoading(true)
-
-    //   fetch('http://localhost:3005/tasks')
-    //     .then((loadedData) => loadedData.json())
-    //     .then((loadedProducts) => {
-    //       const sortTasks = loadedProducts.sort((a, b) => {
-    //         if (a.title < b.title) {
-    //           return -1
-    //         }
-    //         if (a.title > b.title) {
-    //           return 1
-    //         }
-    //         return 0
-    //       })
-    //       setTasks(sortTasks)
-    //     })
-    //     .finally(() => {
-    //       setIsLoading(false)
-    //       setIsSorting(false)
-    //     })
-    // } else {
-    //   getServerTasks().then(() => setIsSorting(false))
-    // }
   }, [])
 
   return (
     <>
       <div className={styles.addFunctional}>
         <div className={styles.sorting}>
-          <label htmlFor="sort">
+          <span>
             {' '}
-            Сортировка по алфавиту{' '}
-            <button
-              className={styles.sortingButton}
-              disabled={isSorting}
-              id="sort"
-              type="click"
-              onClick={onClickSort}
-            >
+            {'Сортировка по алфавиту '}
+            <button className={styles.sortingButton} type="click" onClick={onClickSort}>
               {sortOn ? 'On' : 'Off'}
             </button>
-          </label>{' '}
+          </span>{' '}
         </div>
 
-        <form className={styles.search} onSubmit={findTasks}>
+        <form className={styles.search} onSubmit={findAllTasks}>
           <input
             className={styles.searchString}
             type="text"
@@ -153,8 +133,37 @@ export const Tasks = ({
       <div className={styles.flexDiv}>
         {isLoading ? (
           <div className={styles.loader}></div>
+        ) : sortOn ? (
+          findFlag ? (
+            Object.entries(sortFindTasks).map(([id, { title, description }]) => {
+              return (
+                <div key={id} className={styles.note} onClick={() => showClick(id)}>
+                  <div> {title} </div>
+                  <div> {description} </div>
+                </div>
+              )
+            })
+          ) : (
+            sortTasks.map(([id, { title, description }]) => {
+              return (
+                <div key={id} className={styles.note} onClick={() => showClick(id)}>
+                  <div> {title} </div>
+                  <div> {description} </div>
+                </div>
+              )
+            })
+          )
+        ) : findFlag ? (
+          Object.entries(findTasks).map(([id, { title, description }]) => {
+            return (
+              <div key={id} className={styles.note} onClick={() => showClick(id)}>
+                <div> {title} </div>
+                <div> {description} </div>
+              </div>
+            )
+          })
         ) : (
-          tasks.map(({ id, title, description }) => {
+          Object.entries(tasks).map(([id, { title, description }]) => {
             return (
               <div key={id} className={styles.note} onClick={() => showClick(id)}>
                 <div> {title} </div>
@@ -178,4 +187,6 @@ Tasks.propTypes = {
   setIsDeliting: PropTypes.any,
   setUpdatingTaskForm: PropTypes.any,
   setUpadtingTaskId: PropTypes.any,
+  isLoading: PropTypes.bool,
+  setIsLoading: PropTypes.any,
 }

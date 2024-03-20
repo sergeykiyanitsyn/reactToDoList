@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import styles from './Form.module.css'
+import { db } from '../../firebase'
+import { ref, push, set } from 'firebase/database'
 
 export const Form = ({
   addFlag,
@@ -10,10 +12,11 @@ export const Form = ({
   setUpdatingTaskForm,
   setAddFlag,
   setIsCreating,
-  refreshTasks,
 }) => {
   const [title, setValueTitle] = useState('')
   const [description, setValueDescription] = useState('')
+
+  const tasksDbRef = ref(db, 'tasks')
 
   const onChangeTitle = ({ target }) => {
     setValueTitle(target.value)
@@ -27,35 +30,23 @@ export const Form = ({
     event.preventDefault()
 
     if (addFlag) {
-      fetch('http://localhost:3005/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
-        body: JSON.stringify({
-          title: `${title}`,
-          description: `${description}`,
-        }),
-      })
-        .then(() => refreshTasks())
-        .finally(() => {
-          setAddFlag(false)
-          setIsCreating(false)
-        })
+      push(tasksDbRef, { title: `${title}`, description: `${description}` })
+
+      setAddFlag(false)
+      setIsCreating(false)
     }
 
+    //изменить
     if (updatingTaskForm) {
-      fetch(`http://localhost:3005/tasks/${updatingTaskId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
-        body: JSON.stringify({
-          title: `${title}`,
-          description: `${description}`,
-        }),
+      const updateDbTaskRef = ref(db, `tasks/${updatingTaskId}`)
+
+      set(updateDbTaskRef, {
+        title: `${title}`,
+        description: `${description}`,
+      }).finally(() => {
+        setIsUpdating(false)
+        setUpdatingTaskForm(false)
       })
-        .then(() => refreshTasks())
-        .finally(() => {
-          setIsUpdating(false)
-          setUpdatingTaskForm(false)
-        })
     }
 
     setValueTitle('')
